@@ -2,14 +2,15 @@ import type { Template, TemplateConfig, LayoutElement } from "./types";
 
 const CELL_WIDTH = 500;
 const CELL_HEIGHT = 375;
-const OVERLAP_RATIO = 0.82;
-const PADDING = 80;
-const PANEL_FONT_SIZE = 28;
-const LABEL_FONT_SIZE = 20;
-const ARROW_STROKE_WIDTH = 2.5;
-const PANEL_LETTER_INSET = 12;
-const LABEL_GAP = 28;
-const ARROW_GAP = 50;
+const DX_RATIO = 0.82;
+const DY_RATIO = 0.38;
+const PADDING = 40;
+const PANEL_FONT_SIZE = 36;
+const LABEL_FONT_SIZE = 30;
+const ARROW_STROKE_WIDTH = 3;
+const PANEL_LETTER_INSET = 10;
+const LABEL_GAP = 36;
+const ARROW_GAP = 40;
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -24,8 +25,8 @@ export const diagonalTimeTemplate: Template = {
   computeLayout(config: TemplateConfig) {
     const { images, timingLabels, showPanelLetters, showTimeArrow } = config;
     const n = images.length;
-    const dx = CELL_WIDTH * OVERLAP_RATIO;
-    const dy = CELL_HEIGHT * OVERLAP_RATIO;
+    const dx = CELL_WIDTH * DX_RATIO;
+    const dy = CELL_HEIGHT * DY_RATIO;
 
     const hasTimingLabels = timingLabels.some((l) => l.text.trim().length > 0);
 
@@ -89,7 +90,7 @@ export const diagonalTimeTemplate: Template = {
         strokeWidth: ARROW_STROKE_WIDTH,
         label: "Time",
       });
-      viewBoxHeight = arrowY + ARROW_GAP + PADDING;
+      viewBoxHeight = arrowY + 30 + PADDING;
     } else {
       viewBoxHeight = contentBottom + PADDING;
     }

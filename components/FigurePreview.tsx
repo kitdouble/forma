@@ -99,7 +99,7 @@ function renderElement(el: LayoutElement, index: number) {
               x={midX}
               y={midY - 12}
               fontFamily="Arial, Helvetica, sans-serif"
-              fontSize={22}
+              fontSize={28}
               fill="#555"
               textAnchor="middle"
               fontStyle="italic"

@@ -9,6 +9,7 @@ import { Dropzone } from "./Dropzone";
 import { ImageList } from "./ImageList";
 import { FigurePreview } from "./FigurePreview";
 import { ExportControls } from "./ExportControls";
+import { Logo } from "./Logo";
 
 export function AppShell() {
   const { images, addFiles, removeImage, reorderImages, clearAll } =
@@ -42,13 +43,21 @@ export function AppShell() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b border-gray-200 px-6 py-4">
+      <header className="border-b border-gray-200/80 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight">Forma</h1>
-            <p className="text-sm text-gray-500">
-              Publication-ready experiment figures
-            </p>
+          <div className="flex items-center gap-3">
+            <Logo size={38} />
+            <div>
+              <h1
+                className="text-2xl tracking-tight"
+                style={{ fontFamily: "var(--font-dm-serif), serif" }}
+              >
+                Forma
+              </h1>
+              <p className="text-xs tracking-wide uppercase text-gray-400" style={{ letterSpacing: "0.1em" }}>
+                Publication-ready figures
+              </p>
+            </div>
           </div>
           {images.length > 0 && (
             <button
