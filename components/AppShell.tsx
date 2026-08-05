@@ -4,7 +4,8 @@ import { useRef, useState, useCallback } from "react";
 import type { TimingLabel } from "@/templates/types";
 import { useImages } from "@/hooks/useImages";
 import { useFigure } from "@/hooks/useFigure";
-import { defaultTemplateSlug, templateList } from "@/templates/registry";
+import { defaultTemplateSlug, templateList, templates } from "@/templates/registry";
+import { saveFormaFile, loadFormaFile } from "@/lib/forma-file";
 import { Dropzone } from "./Dropzone";
 import { ImageList } from "./ImageList";
 import { FigurePreview } from "./FigurePreview";
@@ -12,8 +13,9 @@ import { ExportControls } from "./ExportControls";
 import { Logo } from "./Logo";
 
 export function AppShell() {
-  const { images, addFiles, removeImage, reorderImages, clearAll } =
+  const { images, setImages, addFiles, removeImage, reorderImages, clearAll } =
     useImages();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [timingLabels, setTimingLabels] = useState<TimingLabel[]>([]);
   const [showPanelLetters, setShowPanelLetters] = useState(true);
   const [showTimeArrow, setShowTimeArrow] = useState(true);
@@ -33,6 +35,37 @@ export function AppShell() {
       return [...prev, { imageId, text }];
     });
   }, []);
+
+  const handleSave = useCallback(() => {
+    saveFormaFile({
+      templateSlug,
+      images,
+      timingLabels,
+      showPanelLetters,
+      showTimeArrow,
+    });
+  }, [templateSlug, images, timingLabels, showPanelLetters, showTimeArrow]);
+
+  const handleLoad = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const project = await loadFormaFile(file);
+        setImages(project.images);
+        setTimingLabels(project.timingLabels);
+        setShowPanelLetters(project.showPanelLetters);
+        setShowTimeArrow(project.showTimeArrow);
+        if (templates[project.templateSlug]) {
+          setTemplateSlug(project.templateSlug);
+        }
+      } catch (err) {
+        alert(err instanceof Error ? err.message : "Failed to open file");
+      }
+      e.target.value = "";
+    },
+    [setImages]
+  );
 
   const handleRemove = useCallback(
     (id: string) => {
@@ -60,14 +93,37 @@ export function AppShell() {
               </p>
             </div>
           </div>
-          {images.length > 0 && (
+          <div className="flex items-center gap-3">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".forma"
+              onChange={handleLoad}
+              className="hidden"
+            />
             <button
-              onClick={clearAll}
-              className="text-sm text-gray-500 hover:text-red-600 transition-colors"
+              onClick={() => fileInputRef.current?.click()}
+              className="text-sm text-gray-500 hover:text-gray-800 transition-colors"
             >
-              Clear all
+              Open
             </button>
-          )}
+            {images.length > 0 && (
+              <>
+                <button
+                  onClick={handleSave}
+                  className="text-sm text-gray-500 hover:text-gray-800 transition-colors"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={clearAll}
+                  className="text-sm text-gray-500 hover:text-red-600 transition-colors"
+                >
+                  Clear all
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </header>
 

@@ -56,5 +56,5 @@ export function useImages() {
 
   const clearAll = useCallback(() => setImages([]), []);
 
-  return { images, addFiles, removeImage, reorderImages, clearAll };
+  return { images, setImages, addFiles, removeImage, reorderImages, clearAll };
 }
