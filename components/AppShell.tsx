@@ -4,7 +4,7 @@ import { useRef, useState, useCallback } from "react";
 import type { TimingLabel } from "@/templates/types";
 import { useImages } from "@/hooks/useImages";
 import { useFigure } from "@/hooks/useFigure";
-import { defaultTemplateSlug } from "@/templates/registry";
+import { defaultTemplateSlug, templateList } from "@/templates/registry";
 import { Dropzone } from "./Dropzone";
 import { ImageList } from "./ImageList";
 import { FigurePreview } from "./FigurePreview";
@@ -17,9 +17,10 @@ export function AppShell() {
   const [timingLabels, setTimingLabels] = useState<TimingLabel[]>([]);
   const [showPanelLetters, setShowPanelLetters] = useState(true);
   const [showTimeArrow, setShowTimeArrow] = useState(true);
+  const [templateSlug, setTemplateSlug] = useState(defaultTemplateSlug);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  const layout = useFigure(images, defaultTemplateSlug, timingLabels, showPanelLetters, showTimeArrow);
+  const layout = useFigure(images, templateSlug, timingLabels, showPanelLetters, showTimeArrow);
 
   const handleTimingChange = useCallback((imageId: string, text: string) => {
     setTimingLabels((prev) => {
@@ -89,6 +90,24 @@ export function AppShell() {
             </>
           )}
 
+          {images.length >= 2 && (
+            <div className="flex flex-wrap gap-2">
+              {templateList.map((t) => (
+                <button
+                  key={t.slug}
+                  onClick={() => setTemplateSlug(t.slug)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    templateSlug === t.slug
+                      ? "bg-gray-900 text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {t.name}
+                </button>
+              ))}
+            </div>
+          )}
+
           {layout && (
             <>
               <div className="flex items-center gap-4">
@@ -101,15 +120,17 @@ export function AppShell() {
                   />
                   Panel labels (A, B, C...)
                 </label>
-                <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={showTimeArrow}
-                    onChange={(e) => setShowTimeArrow(e.target.checked)}
-                    className="rounded"
-                  />
-                  Time arrow
-                </label>
+                {templateSlug === "diagonal-time" && (
+                  <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={showTimeArrow}
+                      onChange={(e) => setShowTimeArrow(e.target.checked)}
+                      className="rounded"
+                    />
+                    Time arrow
+                  </label>
+                )}
               </div>
               <FigurePreview ref={svgRef} layout={layout} />
               <ExportControls svgRef={svgRef} />
